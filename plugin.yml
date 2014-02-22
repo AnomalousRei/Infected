@@ -1,0 +1,5 @@
+name: Infected
+main: com.oresomecraft.campaign.Infected
+version: 1.0
+authors: ["AnomalousRei"]
+depend: [TagAPI]
