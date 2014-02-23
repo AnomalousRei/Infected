@@ -64,7 +64,6 @@ pip-log.txt
 
 # Maven
 /target
-*/target
 /dependency-reduced-pom.xml
 
 # vim
