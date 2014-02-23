@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <main.class>me.R3creat3.PropHunt</main.class>
+        <main.class>me.anomalousrei.infected.Infected</main.class>
     </properties>
 
     <build>
@@ -72,6 +72,10 @@
             <id>kitteh-repo</id>
             <url>http://repo.kitteh.org/content/repositories/public/</url>
         </repository>
+        <repository>
+            <id>OresomeCraft</id>
+            <url>http://assets.oresomecraft.com/maven</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -104,17 +108,12 @@
         </dependency>
     </dependencies>
 
-    <organization>
-        <name>OresomeCraft</name>
-        <url>http://oresomecraft.com/</url>
-    </organization>
-
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/AnomalousRei/Infected</url>
     </issueManagement>
 
     <inceptionYear>2013-10-25</inceptionYear>
-    <url>http://infect.com/</url>
+    <url>http://github.com/AnomalousRei/</url>
 
 </project>

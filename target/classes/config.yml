@@ -1,8 +1,0 @@
-database:
-    type: "MySQL"
-    port: 3306
-    hostname: "localhost"
-    username: "root"
-    password: "banana"
-    database: "Infected"
-
