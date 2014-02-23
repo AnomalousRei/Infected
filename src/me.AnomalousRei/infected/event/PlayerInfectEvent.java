@@ -1,7 +1,6 @@
-package me.AnomalousRei.infected.event;
+package me.anomalousrei.infected.event;
 
-import me.AnomalousRei.infected.object.IPlayer;
-import me.AnomalousRei.infected.util.Team;
+import me.anomalousrei.infected.object.IPlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -24,11 +23,11 @@ public class PlayerInfectEvent extends Event {
         return handlers;
     }
 
-    public IPlayer getInfector(){
+    public IPlayer getInfector() {
         return infector;
     }
 
-    public IPlayer getInfected(){
+    public IPlayer getInfected() {
         return infected;
     }
 }

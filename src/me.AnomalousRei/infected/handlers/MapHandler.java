@@ -1,9 +1,8 @@
-package me.AnomalousRei.infected.handlers;
+package me.anomalousrei.infected.handlers;
 
-import me.AnomalousRei.infected.NullChunkGenerator;
+import me.anomalousrei.infected.NullChunkGenerator;
 import net.minecraft.server.v1_7_R1.MinecraftServer;
 import net.minecraft.server.v1_7_R1.World;
-import net.minecraft.server.v1_7_R1.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.WorldCreator;
 import org.bukkit.craftbukkit.v1_7_R1.CraftServer;

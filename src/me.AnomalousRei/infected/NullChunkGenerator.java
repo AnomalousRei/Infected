@@ -1,4 +1,4 @@
-package me.AnomalousRei.infected;
+package me.anomalousrei.infected;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -6,9 +6,10 @@ import org.bukkit.generator.ChunkGenerator;
 
 import java.util.Random;
 
-/*
+/**
  * Code forked from NullTerrain.
  * https://github.com/Elizacat/NullTerrain
+ * @author Elizacat
  */
 
 public class NullChunkGenerator extends ChunkGenerator {

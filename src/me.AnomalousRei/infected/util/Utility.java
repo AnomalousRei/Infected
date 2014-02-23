@@ -1,12 +1,11 @@
-package me.AnomalousRei.infected.util;
+package me.anomalousrei.infected.util;
 
-import me.AnomalousRei.infected.Infected;
-import me.AnomalousRei.infected.Storage;
-import me.AnomalousRei.infected.event.RoundEndEvent;
-import me.AnomalousRei.infected.object.IPlayer;
+import me.anomalousrei.infected.Infected;
+import me.anomalousrei.infected.Storage;
+import me.anomalousrei.infected.event.RoundEndEvent;
+import me.anomalousrei.infected.object.IPlayer;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -30,7 +29,7 @@ public class Utility {
     private static int zombieCount() {
         int count = 0;
         for (IPlayer p : Infected.iPlayers.values()) {
-            if (p.getTeam() == Team.ZOMBIE) count++;
+            if (p.getTeam().equals(Team.ZOMBIE)) count++;
         }
         return count;
     }
@@ -38,7 +37,7 @@ public class Utility {
     private static int humanCount() {
         int count = 0;
         for (IPlayer p : Infected.iPlayers.values()) {
-            if (p.getTeam() == Team.HUMAN) count++;
+            if (p.getTeam().equals(Team.HUMAN)) count++;
         }
         return count;
     }
@@ -157,12 +156,12 @@ public class Utility {
 
     public static void checkEndRound() {
         if (Storage.roundStatus.equals("Started")) {
-            if (Storage.currentGamemode == Gamemode.TIMED_PVP || Storage.currentGamemode == Gamemode.TIMED_CLASSIC) {
+            if (Storage.currentGamemode.equals(Gamemode.TIMED_PVP) || Storage.currentGamemode.equals(Gamemode.TIMED_CLASSIC)) {
                 if (humanCount() == 0) {
                     Bukkit.getPluginManager().callEvent(new RoundEndEvent(Team.ZOMBIE));
                 }
             }
-            if (Storage.currentGamemode == Gamemode.CLASSIC || Storage.currentGamemode == Gamemode.PVP) {
+            if (Storage.currentGamemode.equals(Gamemode.CLASSIC) || Storage.currentGamemode.equals(Gamemode.PVP)) {
                 if (humanCount() == 1) {
                     Bukkit.getPluginManager().callEvent(new RoundEndEvent(Team.HUMAN));
                 }
@@ -175,7 +174,7 @@ public class Utility {
 
     public static IPlayer getHuman() {
         for (IPlayer p : Infected.iPlayers.values()) {
-            if (p.getTeam() == Team.HUMAN) return p;
+            if (p.getTeam().equals(Team.HUMAN)) return p;
         }
         return null;
     }

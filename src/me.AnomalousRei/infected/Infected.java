@@ -1,15 +1,14 @@
-package me.AnomalousRei.infected;
+package me.anomalousrei.infected;
 
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
-import com.oresomecraft.campaign.database.MySQL;
-import me.AnomalousRei.infected.handlers.MapHandler;
-import me.AnomalousRei.infected.handlers.RoundHandler;
-import me.AnomalousRei.infected.handlers.SQLHandler;
-import me.AnomalousRei.infected.listener.GlobalListener;
-import me.AnomalousRei.infected.listener.MapListener;
-import me.AnomalousRei.infected.object.IPlayer;
-import me.AnomalousRei.infected.util.Utility;
+import me.anomalousrei.infected.handlers.MapHandler;
+import me.anomalousrei.infected.handlers.RoundHandler;
+import me.anomalousrei.infected.handlers.SQLHandler;
+import me.anomalousrei.infected.listener.GlobalListener;
+import me.anomalousrei.infected.listener.MapListener;
+import me.anomalousrei.infected.object.IPlayer;
+import me.anomalousrei.infected.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -183,11 +182,7 @@ public class Infected extends JavaPlugin {
     }
 
     public boolean hasPermission(CommandSender sender, World world, String perm) {
-        if ((sender.isOp() && opPermissions) || sender instanceof ConsoleCommandSender || sender.hasPermission(perm)) {
-            return true;
-        }
-
-        return false;
+        return ((sender.isOp() && opPermissions) || sender instanceof ConsoleCommandSender || sender.hasPermission(perm));
     }
 
     public void checkPermission(CommandSender sender, String perm)

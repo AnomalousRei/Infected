@@ -1,7 +1,7 @@
-package me.AnomalousRei.infected.handlers;
+package me.anomalousrei.infected.handlers;
 
-import me.AnomalousRei.infected.Infected;
 import com.oresomecraft.campaign.database.MySQL;
+import me.anomalousrei.infected.Infected;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

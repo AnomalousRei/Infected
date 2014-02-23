@@ -1,11 +1,11 @@
-package me.AnomalousRei.infected;
+package me.anomalousrei.infected;
 
+import com.oresomecraft.campaign.database.MySQL;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
-import com.oresomecraft.campaign.database.MySQL;
-import me.AnomalousRei.infected.handlers.SQLHandler;
-import me.AnomalousRei.infected.util.Gamemode;
-import me.AnomalousRei.infected.util.Utility;
+import me.anomalousrei.infected.handlers.SQLHandler;
+import me.anomalousrei.infected.util.Gamemode;
+import me.anomalousrei.infected.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -175,9 +175,8 @@ public class Commands {
 
     private String matchMap(String map) {
         for (String s : Storage.maps) {
-            String temp = s;
             if (s.toLowerCase().startsWith(map.toLowerCase())) {
-                return temp;
+                return s;
             }
         }
         return "None";

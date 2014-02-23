@@ -1,13 +1,11 @@
-package me.AnomalousRei.infected.object;
+package me.anomalousrei.infected.object;
 
-import me.AnomalousRei.infected.Infected;
-import me.AnomalousRei.infected.util.Team;
-import me.AnomalousRei.infected.util.Utility;
-import net.minecraft.server.v1_7_R1.EntityPlayer;
+import me.anomalousrei.infected.Infected;
+import me.anomalousrei.infected.util.Team;
+import me.anomalousrei.infected.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.kitteh.tag.TagAPI;
 

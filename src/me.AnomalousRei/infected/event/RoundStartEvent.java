@@ -1,4 +1,4 @@
-package me.AnomalousRei.infected.event;
+package me.anomalousrei.infected.event;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

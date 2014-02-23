@@ -1,6 +1,6 @@
-package me.AnomalousRei.infected;
+package me.anomalousrei.infected;
 
-import me.AnomalousRei.infected.util.Gamemode;
+import me.anomalousrei.infected.util.Gamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

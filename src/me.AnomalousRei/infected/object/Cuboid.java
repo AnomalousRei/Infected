@@ -1,4 +1,4 @@
-package me.AnomalousRei.infected.object;
+package me.anomalousrei.infected.object;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,14 +11,17 @@ import java.util.Iterator;
 import java.util.List;
 
 
-//Cuboid code taken from DarkLord12's paintwar plugin, all credit goes to DarkLord12.
+/**
+ * Cuboid code taken from DarkLord12's paintwar plugin, all credit goes to DarkLord12.
+ * @author DarkLord12
+ */
 
 public class Cuboid implements Iterable<Block> {
     protected String worldName;
     protected int x1, y1, z1;
     protected int x2, y2, z2;
 
-    public Cuboid(Location l1, Location l2){
+    public Cuboid(Location l1, Location l2) {
         if (l1 == null || l2 == null)
             throw new NullPointerException("Location can't be null");
         else if (l1.getWorld() == null)
@@ -101,9 +104,9 @@ public class Cuboid implements Iterable<Block> {
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
         boolean xBorder = x == x1 || x == x2;
-        boolean x1Border = xBorder ? x == x1 : false;
+        boolean x1Border = xBorder && x == x1;
         boolean zBorder = z == z1 || z == z2;
-        boolean z1Border = zBorder ? z == z1 : false;
+        boolean z1Border = zBorder && z == z1;
         if (xBorder)
             loc.setX(x1Border ? x2 : x1 + 1);
         if (zBorder)

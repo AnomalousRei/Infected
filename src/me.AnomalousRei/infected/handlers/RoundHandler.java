@@ -1,22 +1,21 @@
-package me.AnomalousRei.infected.handlers;
+package me.anomalousrei.infected.handlers;
 
-import me.AnomalousRei.infected.Infected;
-import me.AnomalousRei.infected.Storage;
-import me.AnomalousRei.infected.event.PlayerInfectEvent;
-import me.AnomalousRei.infected.event.RoundBeginEvent;
-import me.AnomalousRei.infected.event.RoundEndEvent;
-import me.AnomalousRei.infected.event.RoundStartEvent;
-import me.AnomalousRei.infected.object.IPlayer;
-import me.AnomalousRei.infected.util.Gamemode;
-import me.AnomalousRei.infected.util.Team;
-import me.AnomalousRei.infected.util.Utility;
+import me.anomalousrei.infected.Infected;
+import me.anomalousrei.infected.Storage;
+import me.anomalousrei.infected.event.PlayerInfectEvent;
+import me.anomalousrei.infected.event.RoundBeginEvent;
+import me.anomalousrei.infected.event.RoundEndEvent;
+import me.anomalousrei.infected.event.RoundStartEvent;
+import me.anomalousrei.infected.object.IPlayer;
+import me.anomalousrei.infected.util.Gamemode;
+import me.anomalousrei.infected.util.Team;
+import me.anomalousrei.infected.util.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Random;
@@ -151,7 +150,7 @@ public class RoundHandler implements Listener {
         Storage.currentCreators.clear();
         Team winner = e.getWinner();
         Gamemode gm = Storage.currentGamemode;
-        if (gm == Gamemode.CLASSIC || gm == Gamemode.PVP) {
+        if (gm.equals(Gamemode.CLASSIC) || gm.equals(Gamemode.PVP)) {
             Bukkit.broadcastMessage(ChatColor.GRAY + "|-------------------------");
             Bukkit.broadcastMessage(ChatColor.GRAY + "| The round is over!");
             Bukkit.broadcastMessage(ChatColor.GRAY + "| " + ChatColor.DARK_RED + "THE ZOMBIES HAVE TAKEN OVER!");
@@ -162,10 +161,10 @@ public class RoundHandler implements Listener {
             Bukkit.broadcastMessage(ChatColor.GRAY + "|-------------------------");
             SQLHandler.logRound(Storage.currentRound, "ZOMBIES", Storage.currentGamemode.toString());
         }
-        if (gm == Gamemode.TIMED_CLASSIC || gm == Gamemode.TIMED_PVP) {
+        if (gm.equals(Gamemode.TIMED_CLASSIC) || gm .equals(Gamemode.TIMED_PVP)) {
             Bukkit.broadcastMessage(ChatColor.GRAY + "|-------------------------");
             Bukkit.broadcastMessage(ChatColor.GRAY + "| The round is over!");
-            if (winner == Team.HUMAN) {
+            if (winner.equals(Team.HUMAN)) {
                 Bukkit.broadcastMessage(ChatColor.GRAY + "| " + ChatColor.GREEN + "THE HUMANS SURVIVED!");
             } else {
                 Bukkit.broadcastMessage(ChatColor.GRAY + "| " + ChatColor.RED + "THE ZOMBIES KILLED ALL THE HUMANS!");

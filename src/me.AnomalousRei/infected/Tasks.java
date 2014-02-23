@@ -1,4 +1,4 @@
-package me.AnomalousRei.infected;
+package me.anomalousrei.infected;
 
 public class Tasks {
     Infected plugin;

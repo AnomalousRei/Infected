@@ -1,6 +1,6 @@
-package me.AnomalousRei.infected.event;
+package me.anomalousrei.infected.event;
 
-import me.AnomalousRei.infected.util.Team;
+import me.anomalousrei.infected.util.Team;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
