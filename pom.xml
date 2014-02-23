@@ -5,7 +5,7 @@
     <groupId>me.AnomalousRei</groupId>
     <artifactId>Infected</artifactId>
     <name>Infected</name>
-    <description>Survive disguised as a block from the deadly hunters!</description>
+    <description>Infected</description>
     <packaging>jar</packaging>
 
     <version>1.0</version>
