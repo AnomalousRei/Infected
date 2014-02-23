@@ -104,17 +104,12 @@
         </dependency>
     </dependencies>
 
-    <organization>
-        <name>OresomeCraft</name>
-        <url>http://oresomecraft.com/</url>
-    </organization>
-
     <issueManagement>
         <system>GitHub</system>
         <url>https://github.com/AnomalousRei/Infected</url>
     </issueManagement>
 
     <inceptionYear>2013-10-25</inceptionYear>
-    <url>http://infect.com/</url>
+    <url>http://github.com/AnomalousRei/</url>
 
 </project>
