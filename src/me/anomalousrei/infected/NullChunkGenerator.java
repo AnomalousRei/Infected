@@ -9,9 +9,9 @@ import java.util.Random;
 /**
  * Code forked from NullTerrain.
  * https://github.com/Elizacat/NullTerrain
+ *
  * @author Elizacat
  */
-
 public class NullChunkGenerator extends ChunkGenerator {
 
     public byte[] generate(World world, Random random, int cx, int cz) {

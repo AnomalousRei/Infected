@@ -2,6 +2,7 @@ package me.anomalousrei.infected;
 
 import com.sk89q.bukkit.util.CommandsManagerRegistration;
 import com.sk89q.minecraft.util.commands.*;
+import me.anomalousrei.infected.database.MySQL;
 import me.anomalousrei.infected.handlers.MapHandler;
 import me.anomalousrei.infected.handlers.RoundHandler;
 import me.anomalousrei.infected.handlers.SQLHandler;
@@ -28,13 +29,12 @@ import java.util.logging.Logger;
 
 public class Infected extends JavaPlugin {
 
+    public static final ArrayList<String> Input = new ArrayList<String>();
     public static Infected plugin;
-    public static Logger logger = Logger.getLogger("Minecraft");
-    public Tasks task = new Tasks(this);
     public static HashMap<String, IPlayer> iPlayers = new HashMap<String, IPlayer>();
-    public static ArrayList<String> Input = new ArrayList<String>();
-
-    //SQL stuff, notouch.
+    public Logger logger = Logger.getLogger("Minecraft");
+    public Tasks task = new Tasks(this);
+    // SQL fields
     public String storageType = null;
     public String storagePort = null;
     public String storageHostname = null;
@@ -42,6 +42,18 @@ public class Infected extends JavaPlugin {
     public String storagePassword = null;
     public String storageDatabase = null;
     public MySQL mysql;
+    /**
+     * *******************************************************************
+     * Code to use for sk89q's command framework goes below this comment! *
+     * ********************************************************************
+     */
+
+    private CommandsManager<CommandSender> commands;
+    private boolean opPermissions;
+
+    public static Infected getInstance() {
+        return plugin;
+    }
 
     public void onEnable() {
         plugin = this;
@@ -51,10 +63,10 @@ public class Infected extends JavaPlugin {
         }
 
         Scoreboard scoreboard = Utility.scoreboard;
-        Objective o = scoreboard.registerNewObjective("Player Count", "dummy");
-        o.setDisplaySlot(DisplaySlot.SIDEBAR);
-        Score zombies = o.getScore(Bukkit.getOfflinePlayer(ChatColor.DARK_RED + "Zombies: "));
-        Score humans = o.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN + "Humans: "));
+        Objective objective = scoreboard.registerNewObjective("Player Count", "dummy");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        Score zombies = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.DARK_RED + "Zombies: "));
+        Score humans = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN + "Humans: "));
         zombies.setScore(0);
         humans.setScore(0);
 
@@ -68,11 +80,12 @@ public class Infected extends JavaPlugin {
         registerCommands();
         cacheTimer();
 
-        final long ID = Utility.generateID();
-        MapHandler.loadMap(Storage.rotationList.get(Storage.rotationPoint), ID + "");
-        RoundHandler.start(Storage.rotationList.get(Storage.rotationPoint), ID);
+        final long id = Utility.generateID();
+        if (Storage.rotationList.size() > 0) {
+            MapHandler.loadMap(Storage.rotationList.get(Storage.rotationPoint), id + "");
+            RoundHandler.start(Storage.rotationList.get(Storage.rotationPoint), id);
+        }
 
-        //SQL Stuff
         // SQL Connection
         storageType = getConfig().getString("database.type");
         storagePort = getConfig().getString("database.port");
@@ -94,17 +107,13 @@ public class Infected extends JavaPlugin {
             SQLHandler.createTables();
             mysql.close();
         } else {
-            System.out.println("We couldn't connect to the SQL!");
+            System.out.println("We couldn't connect to the SQL server!");
             mysql.close();
         }
     }
 
     public void onDisable() {
         MapHandler.restoreMap(Storage.roundID + "");
-    }
-
-    public static Infected getInstance() {
-        return plugin;
     }
 
     // This will push all cached input every 10 seconds
@@ -122,15 +131,6 @@ public class Infected extends JavaPlugin {
             }
         }, 10 * 20L, 10 * 20L);
     }
-
-    /**
-     * *******************************************************************
-     * Code to use for sk89q's command framework goes below this comment! *
-     * ********************************************************************
-     */
-
-    private CommandsManager<CommandSender> commands;
-    private boolean opPermissions;
 
     private void registerCommands() {
         final Infected plugin = this;
@@ -158,15 +158,15 @@ public class Infected extends JavaPlugin {
         } catch (CommandUsageException e) {
             sender.sendMessage(ChatColor.RED + e.getMessage());
             sender.sendMessage(ChatColor.RED + e.getUsage());
-        } catch (WrappedCommandException e) {
-            if (e.getCause() instanceof NumberFormatException) {
+        } catch (WrappedCommandException ex) {
+            if (ex.getCause() instanceof NumberFormatException) {
                 sender.sendMessage(ChatColor.RED + "You need to enter a number!");
             } else {
                 sender.sendMessage(ChatColor.RED + "Error occurred, contact developer.");
-                e.printStackTrace();
+                ex.printStackTrace();
             }
-        } catch (CommandException e) {
-            sender.sendMessage(ChatColor.RED + e.getMessage());
+        } catch (CommandException ex) {
+            sender.sendMessage(ChatColor.RED + ex.getMessage());
         }
 
         return true;

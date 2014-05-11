@@ -47,84 +47,89 @@ public class Storage {
     public static HashMap<String, ArrayList<String>> creators = new HashMap<String, ArrayList<String>>();
 
     public static void registerMaps() {
-        for (File f : new File("config/").listFiles()) {
-            if (f.getName().contains(".xml")) {
-                try {
-                    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                    Document doc = dBuilder.parse(f);
-                    doc.getDocumentElement().normalize();
+        if (new File("config/").listFiles() != null && new File("config/").listFiles().length > 0) {
+            for (File f : new File("config/").listFiles()) {
+                if (f.getName().contains(".xml")) {
+                    try {
+                        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                        Document doc = dBuilder.parse(f);
+                        doc.getDocumentElement().normalize();
 
-                    String rootNode = doc.getDocumentElement().getNodeName();
-                    NodeList rootList = doc.getElementsByTagName(rootNode);
-                    String mapName = ((Element) rootList.item(0)).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
-
-
-                    NodeList nSpawn = doc.getElementsByTagName("spawn");
-                    spawns.put(mapName, new Location(Bukkit.getWorld(mapName), Integer.parseInt(nSpawn.item(0).getAttributes().getNamedItem("x").getTextContent()),
-                            Integer.parseInt(nSpawn.item(0).getAttributes().getNamedItem("y").getTextContent()),
-                            Integer.parseInt(nSpawn.item(0).getAttributes().getNamedItem("z").getTextContent())));
-
-                    gameTypes.put(mapName, Gamemode.valueOf(((Element) rootList.item(0)).getElementsByTagName("objective").item(0).getChildNodes().item(0).getNodeValue()));
-                    maps.add(mapName);
+                        String rootNode = doc.getDocumentElement().getNodeName();
+                        NodeList rootList = doc.getElementsByTagName(rootNode);
+                        String mapName = ((Element) rootList.item(0)).getElementsByTagName("name").item(0).getChildNodes().item(0).getNodeValue();
 
 
-                    NodeList creator = doc.getElementsByTagName("creators");
-                    ArrayList<String> tempC = new ArrayList<String>();
+                        NodeList nSpawn = doc.getElementsByTagName("spawn");
+                        spawns.put(mapName, new Location(Bukkit.getWorld(mapName), Integer.parseInt(nSpawn.item(0).getAttributes().getNamedItem("x").getTextContent()),
+                                Integer.parseInt(nSpawn.item(0).getAttributes().getNamedItem("y").getTextContent()),
+                                Integer.parseInt(nSpawn.item(0).getAttributes().getNamedItem("z").getTextContent())));
 
-                    for (int i = 0; i < creator.getLength(); i++) {
-                        Node node = creator.item(i);
-                        for (int j = 0; j < node.getChildNodes().getLength(); j++) {
+                        gameTypes.put(mapName, Gamemode.valueOf(((Element) rootList.item(0)).getElementsByTagName("objective").item(0).getChildNodes().item(0).getNodeValue()));
+                        maps.add(mapName);
 
-                            Node child = node.getChildNodes().item(j);
 
-                            if (!child.getNodeName().equals("#text")) {
-                                NamedNodeMap attributes = child.getAttributes();
-                                tempC.add(attributes.getNamedItem("name").getTextContent());
-                            }
-                        }
-                    }
-                    creators.put(mapName, tempC);
-                    NodeList nKit = doc.getElementsByTagName("kit");
-                    HashMap<Integer, ItemStack> kit = new HashMap<Integer, ItemStack>();
+                        NodeList creator = doc.getElementsByTagName("creators");
+                        ArrayList<String> tempC = new ArrayList<String>();
 
-                    for (int i = 0; i < nKit.getLength(); i++) {
-                        Node node = nKit.item(i);
-                        for (int j = 0; j < node.getChildNodes().getLength(); j++) {
+                        for (int i = 0; i < creator.getLength(); i++) {
+                            Node node = creator.item(i);
+                            for (int j = 0; j < node.getChildNodes().getLength(); j++) {
 
-                            Node child = node.getChildNodes().item(j);
+                                Node child = node.getChildNodes().item(j);
 
-                            if (!child.getNodeName().equals("#text")) {
-                                NamedNodeMap attributes = child.getAttributes();
-
-                                if (child.getNodeName().equals("item")) {
-                                    kit.put(Integer.parseInt(attributes.getNamedItem("slot").getTextContent()), new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()),
-                                            Integer.parseInt(attributes.getNamedItem("amount").getTextContent())));
-                                }
-                                if (child.getNodeName().equalsIgnoreCase("helmet")) {
-                                    kit.put(-1, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
-                                }
-                                if (child.getNodeName().equalsIgnoreCase("chestplate")) {
-                                    kit.put(-2, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
-                                }
-                                if (child.getNodeName().equalsIgnoreCase("leggings")) {
-                                    kit.put(-3, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
-                                }
-                                if (child.getNodeName().equalsIgnoreCase("boots")) {
-                                    kit.put(-4, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
+                                if (!child.getNodeName().equals("#text")) {
+                                    NamedNodeMap attributes = child.getAttributes();
+                                    tempC.add(attributes.getNamedItem("name").getTextContent());
                                 }
                             }
                         }
-                    }
-                    kits.put(mapName, kit);
-                } catch (Exception e) {
+                        creators.put(mapName, tempC);
+                        NodeList nKit = doc.getElementsByTagName("kit");
+                        HashMap<Integer, ItemStack> kit = new HashMap<Integer, ItemStack>();
 
+                        for (int i = 0; i < nKit.getLength(); i++) {
+                            Node node = nKit.item(i);
+                            for (int j = 0; j < node.getChildNodes().getLength(); j++) {
+
+                                Node child = node.getChildNodes().item(j);
+
+                                if (!child.getNodeName().equals("#text")) {
+                                    NamedNodeMap attributes = child.getAttributes();
+
+                                    if (child.getNodeName().equals("item")) {
+                                        kit.put(Integer.parseInt(attributes.getNamedItem("slot").getTextContent()), new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()),
+                                                Integer.parseInt(attributes.getNamedItem("amount").getTextContent())));
+                                    }
+                                    if (child.getNodeName().equalsIgnoreCase("helmet")) {
+                                        kit.put(-1, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
+                                    }
+                                    if (child.getNodeName().equalsIgnoreCase("chestplate")) {
+                                        kit.put(-2, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
+                                    }
+                                    if (child.getNodeName().equalsIgnoreCase("leggings")) {
+                                        kit.put(-3, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
+                                    }
+                                    if (child.getNodeName().equalsIgnoreCase("boots")) {
+                                        kit.put(-4, new ItemStack(Material.matchMaterial(attributes.getNamedItem("type").getTextContent()), 1));
+                                    }
+                                }
+                            }
+                        }
+                        kits.put(mapName, kit);
+                    } catch (Exception ex) {
+                        System.out.println("An exception occured while trying to load Infection maps!");
+                        ex.printStackTrace();
+                    }
                 }
             }
+        } else {
+            System.err.println("No Infection maps were found!");
         }
     }
 
-    public static String randomDeathMessage() {
+    public static String getRandomDeathMessage() {
         ArrayList<String> messages = new ArrayList<String>();
         messages.add(" fell victim to ");
         messages.add(" was torn apart by ");

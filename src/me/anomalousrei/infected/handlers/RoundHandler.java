@@ -22,6 +22,7 @@ import java.util.Random;
 
 public class RoundHandler implements Listener {
 
+    public static BukkitTask currentTask = null;
     Infected plugin;
 
     public RoundHandler(Infected pl) {
@@ -29,11 +30,9 @@ public class RoundHandler implements Listener {
         pl.getServer().getPluginManager().registerEvents(this, pl);
     }
 
-    public static BukkitTask currentTask = null;
-
     public static void start(String map, long ID) {
-        for (IPlayer p : Infected.iPlayers.values()) {
-            p.setTeam(Team.HUMAN);
+        for (IPlayer iPlayer : Infected.iPlayers.values()) {
+            iPlayer.setTeam(Team.HUMAN);
         }
         Storage.roundStatus = "Starting";
         Storage.currentRound = map;
@@ -67,7 +66,7 @@ public class RoundHandler implements Listener {
         }, 420L);
     }
 
-    public static void timedRound(Gamemode gm) {
+    public static void timedRound(Gamemode gamemode) {
 
     }
 
@@ -100,7 +99,7 @@ public class RoundHandler implements Listener {
     }
 
     @EventHandler
-    public void start(RoundStartEvent e) {
+    public void start(RoundStartEvent event) {
         for (Player p : Bukkit.getOnlinePlayers()) {
             IPlayer.getIPlayer(p).setTeam(Team.HUMAN);
             int x = Storage.spawns.get(Storage.currentRound).getBlockX();
@@ -116,7 +115,7 @@ public class RoundHandler implements Listener {
     }
 
     @EventHandler
-    public void begin(RoundBeginEvent e) {
+    public void begin(RoundBeginEvent event) {
         Bukkit.broadcastMessage(ChatColor.YELLOW + "The round has started!");
         Storage.roundStatus = "Started";
         Utility.updateScoreboard();
@@ -125,32 +124,32 @@ public class RoundHandler implements Listener {
             Bukkit.getPluginManager().callEvent(new RoundEndEvent(Team.ZOMBIE));
             return;
         }
-        Player p = Bukkit.getOnlinePlayers()[new Random().nextInt(Bukkit.getOnlinePlayers().length)];
-        IPlayer.getIPlayer(p).setTeam(Team.ZOMBIE);
-        p.getWorld().strikeLightningEffect(p.getLocation());
-        Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + " started the infection!");
+        Player player = Bukkit.getOnlinePlayers()[new Random().nextInt(Bukkit.getOnlinePlayers().length)];
+        IPlayer.getIPlayer(player).setTeam(Team.ZOMBIE);
+        player.getWorld().strikeLightningEffect(player.getLocation());
+        Bukkit.broadcastMessage(player.getDisplayName() + ChatColor.YELLOW + " started the infection!");
         Utility.checkZombie();
     }
 
     @EventHandler
-    public void infect(PlayerInfectEvent e) {
-        e.getInfected().getWorld().strikeLightningEffect(e.getInfected().getLocation());
-        e.getInfected().setTeam(Team.ZOMBIE);
+    public void infect(PlayerInfectEvent event) {
+        event.getInfected().getWorld().strikeLightningEffect(event.getInfected().getLocation());
+        event.getInfected().setTeam(Team.ZOMBIE);
         Utility.checkZombie();
-        SQLHandler.logKill(e.getInfector().getName(), e.getInfected().getName(), Storage.currentRound, Storage.currentGamemode.toString());
+        SQLHandler.logKill(event.getInfector().getName(), event.getInfected().getName(), Storage.currentRound, Storage.currentGamemode.toString());
     }
 
     @EventHandler
-    public void end(RoundEndEvent e) {
+    public void end(RoundEndEvent event) {
         if (Storage.roundStatus.equals("Cycling")) return;
         Utility.respawn();
         if (currentTask != null) currentTask.cancel();
         currentTask = null;
         Storage.roundStatus = "Cycling";
         Storage.currentCreators.clear();
-        Team winner = e.getWinner();
-        Gamemode gm = Storage.currentGamemode;
-        if (gm.equals(Gamemode.CLASSIC) || gm.equals(Gamemode.PVP)) {
+        Team winner = event.getWinner();
+        Gamemode gamemode = Storage.currentGamemode;
+        if (gamemode.equals(Gamemode.CLASSIC) || gamemode.equals(Gamemode.PVP)) {
             Bukkit.broadcastMessage(ChatColor.GRAY + "|-------------------------");
             Bukkit.broadcastMessage(ChatColor.GRAY + "| The round is over!");
             Bukkit.broadcastMessage(ChatColor.GRAY + "| " + ChatColor.DARK_RED + "THE ZOMBIES HAVE TAKEN OVER!");
@@ -161,7 +160,7 @@ public class RoundHandler implements Listener {
             Bukkit.broadcastMessage(ChatColor.GRAY + "|-------------------------");
             SQLHandler.logRound(Storage.currentRound, "ZOMBIES", Storage.currentGamemode.toString());
         }
-        if (gm.equals(Gamemode.TIMED_CLASSIC) || gm .equals(Gamemode.TIMED_PVP)) {
+        if (gamemode.equals(Gamemode.TIMED_CLASSIC) || gamemode.equals(Gamemode.TIMED_PVP)) {
             Bukkit.broadcastMessage(ChatColor.GRAY + "|-------------------------");
             Bukkit.broadcastMessage(ChatColor.GRAY + "| The round is over!");
             if (winner.equals(Team.HUMAN)) {
@@ -174,8 +173,8 @@ public class RoundHandler implements Listener {
             Bukkit.broadcastMessage(ChatColor.GRAY + "|-------------------------");
             SQLHandler.logRound(Storage.currentRound, "ZOMBIES", Storage.currentGamemode.toString());
         }
-        for (IPlayer p : Infected.iPlayers.values()) {
-            p.setTeam(Team.OBSERVER);
+        for (IPlayer iPlayer : Infected.iPlayers.values()) {
+            iPlayer.setTeam(Team.OBSERVER);
         }
         cycleToNextMap();
     }

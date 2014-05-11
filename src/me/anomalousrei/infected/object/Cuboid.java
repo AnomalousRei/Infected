@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 /**
- * Cuboid code taken from DarkLord12's paintwar plugin, all credit goes to DarkLord12.
+ * Cuboid code taken from DarkLord12's PaintWar plugin, all credit goes to DarkLord12.
+ *
  * @author DarkLord12
  */
-
 public class Cuboid implements Iterable<Block> {
     protected String worldName;
     protected int x1, y1, z1;
@@ -46,13 +45,6 @@ public class Cuboid implements Iterable<Block> {
         return x >= x1 && x <= x2 && y >= y1 && y <= y2 && z >= z1 && z <= z2;
     }
 
-    public void setBlocks(Material material) {
-        if (material.isBlock())
-            throw new IllegalArgumentException("'" + material.name() + "' isn't a valid block material");
-        for (Block b : this)
-            b.setType(material);
-    }
-
     public boolean hasReachedHorizontalBorder(Location loc) {
         int x = loc.getBlockX();
         int z = loc.getBlockZ();
@@ -67,6 +59,13 @@ public class Cuboid implements Iterable<Block> {
                 for (int y = y1; y <= y2; y++)
                     blocks.add(world.getBlockAt(x, y, z));
         return blocks;
+    }
+
+    public void setBlocks(Material material) {
+        if (material.isBlock())
+            throw new IllegalArgumentException("'" + material.name() + "' isn't a valid block material");
+        for (Block b : this)
+            b.setType(material);
     }
 
     public int getSizeX() {

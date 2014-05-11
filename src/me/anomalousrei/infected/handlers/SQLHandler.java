@@ -1,7 +1,7 @@
 package me.anomalousrei.infected.handlers;
 
-import com.oresomecraft.campaign.database.MySQL;
 import me.anomalousrei.infected.Infected;
+import me.anomalousrei.infected.database.MySQL;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +23,6 @@ public class SQLHandler {
                 plugin.storageUsername,
                 plugin.storagePassword);
         mysql.open();
-
         if (!mysql.checkTable(plugin.storageDatabase + "_kills")) {
             mysql.query("CREATE TABLE `" + plugin.storageDatabase + "_kills` (" +
                     "`id` INT(10) UNSIGNED NULL AUTO_INCREMENT," +
@@ -33,7 +32,6 @@ public class SQLHandler {
                     "`gamemode` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_general_ci'," +
                     "PRIMARY KEY (`id`))");
         }
-
         if (!mysql.checkTable(plugin.storageDatabase + "_rounds")) {
             mysql.query("CREATE TABLE `" + plugin.storageDatabase + "_rounds` (" +
                     "`id` INT(10) UNSIGNED NULL AUTO_INCREMENT," +
@@ -42,7 +40,6 @@ public class SQLHandler {
                     "`gamemode` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_general_ci'," +
                     "PRIMARY KEY (`id`))");
         }
-
         mysql.close();
     }
 
@@ -57,12 +54,11 @@ public class SQLHandler {
 
         mysql.open();
 
-        ResultSet killer = mysql.query("SELECT COUNT(1) FROM " + plugin.storageDatabase + "_kills where killer = \"" + name + "\"");
-        ResultSet killed = mysql.query("SELECT COUNT(1) FROM " + plugin.storageDatabase + "_kills where killed = \"" + name + "\"");
-        killer.first();
-        killed.first();
-        if (killed.getInt(1) != 0 || killer.getInt(1) != 0) return true;
-        return false;
+        ResultSet killerSet = mysql.query("SELECT COUNT(1) FROM " + plugin.storageDatabase + "_kills where killer = \"" + name + "\"");
+        ResultSet killedSet = mysql.query("SELECT COUNT(1) FROM " + plugin.storageDatabase + "_kills where killed = \"" + name + "\"");
+        killerSet.first();
+        killedSet.first();
+        return (killedSet.getInt(1) != 0 || killerSet.getInt(1) != 0);
     }
 
     public static synchronized void logKill(String infector, String infected, String map, String gamemode) {

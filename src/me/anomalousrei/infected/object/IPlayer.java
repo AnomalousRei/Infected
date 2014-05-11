@@ -4,28 +4,17 @@ import me.anomalousrei.infected.Infected;
 import me.anomalousrei.infected.util.Team;
 import me.anomalousrei.infected.util.Utility;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.kitteh.tag.TagAPI;
 
 public class IPlayer extends CraftPlayer {
 
-    public IPlayer(Player p) {
-        super((CraftServer) Bukkit.getServer(), ((CraftPlayer) p).getHandle());
-    }
-
     private Team team = Team.OBSERVER;
 
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team t) {
-        team = t;
-        TagAPI.refreshPlayer(getPlayer());
-        Utility.updateDisplayName(getPlayer());
-        Utility.updateScoreboard();
+    public IPlayer(Player p) {
+        super((CraftServer) Bukkit.getServer(), ((CraftPlayer) p).getHandle());
     }
 
     public static void craftIPlayer(Player p) {
@@ -40,23 +29,39 @@ public class IPlayer extends CraftPlayer {
     public static IPlayer getIPlayer(String p) {
         return Infected.iPlayers.get(p);
     }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team t) {
+        team = t;
+        TagAPI.refreshPlayer(getPlayer());
+        Utility.updateDisplayName(getPlayer());
+        Utility.updateScoreboard();
+    }
     // *********** Deprecated thanks to Bukkit's over-mapped thing ***********
 
     public double getLastDamage() {
         return super.getLastDamage();
     }
 
-    public double getMaxHealth() {
-        return super.getMaxHealth();
+    @Deprecated
+    public void setLastDamage(int amount) {
+        super.damage((double) amount);
     }
 
-    public double getHealth() {
-        return super.getHealth();
+    public double getMaxHealth() {
+        return super.getMaxHealth();
     }
 
     @Deprecated
     public void setMaxHealth(int amount) {
         super.setMaxHealth((double) amount);
+    }
+
+    public double getHealth() {
+        return super.getHealth();
     }
 
     @Deprecated
@@ -72,10 +77,5 @@ public class IPlayer extends CraftPlayer {
     @Deprecated
     public void damage(int amount, org.bukkit.entity.Entity entity) {
         super.damage((double) amount, entity);
-    }
-
-    @Deprecated
-    public void setLastDamage(int amount) {
-        super.damage((double) amount);
     }
 }

@@ -1,12 +1,12 @@
 package me.anomalousrei.infected.handlers;
 
 import me.anomalousrei.infected.NullChunkGenerator;
-import net.minecraft.server.v1_7_R1.MinecraftServer;
-import net.minecraft.server.v1_7_R1.World;
+import net.minecraft.server.v1_7_R3.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.craftbukkit.v1_7_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R3.CraftWorld;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.io.*;
@@ -25,8 +25,9 @@ public abstract class MapHandler {
         File worldToCopy = new File("maps/" + map.toLowerCase());
         try {
             copyFolder(worldToCopy, new File(Bukkit.getWorldContainer().getAbsolutePath() + "/" + ID));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            System.out.println("An error occurred while attempting to load a map!");
+            ex.printStackTrace();
         }
 
         Bukkit.createWorld(new WorldCreator(ID).generator(new NullChunkGenerator()));
@@ -34,7 +35,7 @@ public abstract class MapHandler {
 
     public static boolean restoreMap(String map) {
         if (Bukkit.getWorld(map) != null) forceUnloadWorld(Bukkit.getWorld(map));
-        return delete(new File(map));
+        return deleteFolder(new File(map));
     }
 
     /**
@@ -43,17 +44,8 @@ public abstract class MapHandler {
      * @param folder Directory to delete
      * @return true if directory was successfully deleted
      */
-    private static boolean delete(File folder) {
-        if (!folder.exists())
-            return true;
-        boolean retVal = true;
-        if (folder.isDirectory())
-            for (File f : folder.listFiles())
-                if (!delete(f)) {
-                    retVal = false;
-                    System.out.println("Failed to delete file: " + f.getName());
-                }
-        return folder.delete() && retVal;
+    private static boolean deleteFolder(File folder) {
+        return (!folder.exists() || folder.delete());
     }
 
     /**
@@ -70,16 +62,19 @@ public abstract class MapHandler {
         Bukkit.getPluginManager().callEvent(e);
 
         try {
-            Field f = server.getClass().getDeclaredField("worlds"); // Get worlds arraylist
-            f.setAccessible(true); // Make it accessible
+            Field field = server.getClass().getDeclaredField("worlds"); // Get worlds ArrayList
+            field.setAccessible(true); // Make it accessible
             @SuppressWarnings("unchecked")
-            Map<String, World> worlds = (Map<String, World>) f.get(server);
+            Map<String, World> worlds = (Map<String, World>) field.get(server);
             worlds.remove(world.getName().toLowerCase()); // Remove world from worlds list
-            f.setAccessible(false); // Make it private again
-        } catch (Exception ex) { /* Impossibru */}
+            field.setAccessible(false); // Make it private again
+        } catch (Exception ex) {
+            System.out.println("An error occurred while trying to Force Unload a world!");
+            ex.printStackTrace();
+        }
 
-        MinecraftServer ms = getMinecraftServer();
-        ms.worlds.remove(ms.worlds.indexOf(craftWorld.getHandle())); // Remove WorldServer
+        MinecraftServer minecraftServer = getMinecraftServer();
+        minecraftServer.worlds.remove(minecraftServer.worlds.indexOf(craftWorld.getHandle())); // Remove WorldServer
 
     }
 
@@ -96,33 +91,28 @@ public abstract class MapHandler {
     /**
      * Copy Map folder into main server directory for loading
      *
-     * @param src  Source directory
-     * @param dest Destination directory
+     * @param src         Source directory
+     * @param destination Destination directory
      * @throws IOException Thrown if an error occurs while trying to copy
      */
-    public static void copyFolder(File src, File dest) throws IOException {
+    public static void copyFolder(File src, File destination) throws IOException {
 
         if (src.isDirectory()) {
-
-            if (!dest.exists()) {
-                dest.mkdir();
+            if (!destination.exists()) {
+                destination.mkdir();
             }
 
             String files[] = src.list();
-
             for (String file : files) {
                 File srcFile = new File(src, file);
-                File destFile = new File(dest, file);
+                File destFile = new File(destination, file);
                 copyFolder(srcFile, destFile);
             }
-
         } else {
-
             InputStream in = new FileInputStream(src);
-            OutputStream out = new FileOutputStream(dest);
+            OutputStream out = new FileOutputStream(destination);
 
             byte[] buffer = new byte[1024];
-
             int length;
             while ((length = in.read(buffer)) > 0) {
                 out.write(buffer, 0, length);
@@ -130,7 +120,6 @@ public abstract class MapHandler {
 
             in.close();
             out.close();
-
         }
     }
 }

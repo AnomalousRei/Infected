@@ -15,11 +15,11 @@ public class PlayerInfectEvent extends Event {
         this.infected = infected;
     }
 
-    public HandlerList getHandlers() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    public HandlerList getHandlers() {
         return handlers;
     }
 
