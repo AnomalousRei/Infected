@@ -9,15 +9,15 @@ public class RoundEndEvent extends Event {
 
     Team winner = Team.ZOMBIE;
 
-    public RoundEndEvent(Team t) {
-        winner = t;
-    }
-
-    public HandlerList getHandlers() {
-        return handlers;
+    public RoundEndEvent(Team team) {
+        winner = team;
     }
 
     public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    public HandlerList getHandlers() {
         return handlers;
     }
 

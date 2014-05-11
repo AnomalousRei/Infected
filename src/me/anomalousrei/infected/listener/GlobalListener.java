@@ -34,119 +34,115 @@ public class GlobalListener implements Listener {
     }
 
     @EventHandler
-    public void join(PlayerJoinEvent e) {
-        IPlayer.craftIPlayer(e.getPlayer());
-        e.getPlayer().setScoreboard(Utility.scoreboard);
+    public void join(PlayerJoinEvent event) {
+        IPlayer.craftIPlayer(event.getPlayer());
+        event.getPlayer().setScoreboard(Utility.scoreboard);
         if (Storage.roundStatus.equals("Starting")) {
-            IPlayer.getIPlayer(e.getPlayer()).setTeam(Team.HUMAN);
+            IPlayer.getIPlayer(event.getPlayer()).setTeam(Team.HUMAN);
         } else if (Storage.roundStatus.equals("Started")) {
-            IPlayer.getIPlayer(e.getPlayer()).setTeam(Team.ZOMBIE);
+            IPlayer.getIPlayer(event.getPlayer()).setTeam(Team.ZOMBIE);
         }
-        int x = Storage.spawns.get(Storage.currentRound).getBlockX();
-        int y = Storage.spawns.get(Storage.currentRound).getBlockY();
-        int z = Storage.spawns.get(Storage.currentRound).getBlockZ();
-        e.getPlayer().teleport(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
-        Utility.handKit(e.getPlayer());
-        Utility.updateDisplayName(e.getPlayer());
-        Utility.updateScoreboard();
+        if (Storage.spawns.size() > 0) {
+            int x = Storage.spawns.get(Storage.currentRound).getBlockX();
+            int y = Storage.spawns.get(Storage.currentRound).getBlockY();
+            int z = Storage.spawns.get(Storage.currentRound).getBlockZ();
+            event.getPlayer().teleport(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
+            Utility.handKit(event.getPlayer());
+            Utility.updateDisplayName(event.getPlayer());
+            Utility.updateScoreboard();
+        }
     }
 
     @EventHandler
-    public void quit(PlayerQuitEvent e) {
-        Infected.iPlayers.remove(e.getPlayer().getName());
+    public void quit(PlayerQuitEvent event) {
+        Infected.iPlayers.remove(event.getPlayer().getName());
         if (Storage.roundStatus.equals("Started")) Utility.checkZombie();
         Utility.updateScoreboard();
     }
 
     @EventHandler
-    public void damage(EntityDamageByEntityEvent e) {
+    public void damage(EntityDamageByEntityEvent event) {
         if (Storage.roundStatus.equals("Cycling")) return;
         if (Storage.currentGamemode.equals(Gamemode.CLASSIC) || Storage.currentGamemode.equals(Gamemode.TIMED_CLASSIC))
-            e.setCancelled(true);
-        if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
-            Player damaged = (Player) e.getEntity();
-            Player damager = (Player) e.getDamager();
-            IPlayer idm = IPlayer.getIPlayer(damaged);
-            IPlayer idmgr = IPlayer.getIPlayer(damager);
-            if (idm.getTeam().equals(idmgr.getTeam())) e.setCancelled(true);
+            event.setCancelled(true);
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+            if (IPlayer.getIPlayer((Player) event.getEntity()).getTeam().equals(IPlayer.getIPlayer((Player) event.getDamager()).getTeam()))
+                event.setCancelled(true);
         }
-        if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
-            Player damaged = (Player) e.getEntity();
-            Arrow a = (Arrow) e.getDamager();
-            Player damager = (Player) a.getShooter();
-            IPlayer idm = IPlayer.getIPlayer(damaged);
-            IPlayer idmgr = IPlayer.getIPlayer(damager);
-            if (idm.getTeam().equals(idmgr.getTeam())) e.setCancelled(true);
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Arrow) {
+            Arrow arrow = (Arrow) event.getDamager();
+            if (IPlayer.getIPlayer((Player) event.getEntity()).getTeam().equals(IPlayer.getIPlayer((Player) arrow.getShooter()).getTeam()))
+                event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void respawn(PlayerRespawnEvent e) {
+    public void respawn(PlayerRespawnEvent event) {
         if (!Storage.roundStatus.equals("Cycling")) {
-            Player p = e.getPlayer();
+            Player p = event.getPlayer();
             int x = Storage.spawns.get(Storage.currentRound).getBlockX();
             int y = Storage.spawns.get(Storage.currentRound).getBlockY();
             int z = Storage.spawns.get(Storage.currentRound).getBlockZ();
-            e.setRespawnLocation(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
+            event.setRespawnLocation(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
             Utility.handKit(p);
         }
     }
 
     @EventHandler
-    public void death(PlayerDeathEvent e) {
+    public void death(PlayerDeathEvent event) {
         if (Storage.roundStatus.equals("Cycling")) {
-            e.getEntity().setHealth(20);
+            event.getEntity().setHealth(20);
             return;
         }
         try {
-            if (e.getEntity().getLastDamageCause().getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) {
-                if (e.getEntity().getKiller() != null) {
-                    e.setDeathMessage(e.getEntity().getDisplayName() + ChatColor.YELLOW + Storage.randomDeathMessage() + e.getEntity().getKiller().getDisplayName());
+            if (event.getEntity().getLastDamageCause().getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)) {
+                if (event.getEntity().getKiller() != null) {
+                    event.setDeathMessage(event.getEntity().getDisplayName() + ChatColor.YELLOW + Storage.getRandomDeathMessage() + event.getEntity().getKiller().getDisplayName());
                 }
             }
         } catch (NullPointerException ex) {
-            e.setDeathMessage(e.getEntity().getDisplayName() + ChatColor.YELLOW + " died");
+            event.setDeathMessage(event.getEntity().getDisplayName() + ChatColor.YELLOW + " died");
         }
-        if (IPlayer.getIPlayer(e.getEntity()).getTeam().equals(Team.HUMAN))
-            Bukkit.getPluginManager().callEvent(new PlayerInfectEvent(IPlayer.getIPlayer(e.getEntity().getKiller()), IPlayer.getIPlayer(e.getEntity())));
-        Utility.updateDisplayName(e.getEntity());
+        if (IPlayer.getIPlayer(event.getEntity()).getTeam().equals(Team.HUMAN))
+            Bukkit.getPluginManager().callEvent(new PlayerInfectEvent(IPlayer.getIPlayer(event.getEntity().getKiller()), IPlayer.getIPlayer(event.getEntity())));
+        Utility.updateDisplayName(event.getEntity());
     }
 
     @EventHandler
-    public void move(PlayerMoveEvent e) {
-        if (e.getTo().getBlockY() <= 0) {
-            Utility.teleportToSpawn(e.getPlayer());
-            if (IPlayer.getIPlayer(e.getPlayer()).getTeam().equals(Team.HUMAN) && Storage.roundStatus.equals("Started")) {
-                e.getPlayer().getWorld().strikeLightningEffect(e.getPlayer().getLocation());
-                IPlayer.getIPlayer(e.getPlayer()).setTeam(Team.ZOMBIE);
+    public void move(PlayerMoveEvent event) {
+        if (event.getTo().getBlockY() <= 0) {
+            Utility.teleportToSpawn(event.getPlayer());
+            if (IPlayer.getIPlayer(event.getPlayer()).getTeam().equals(Team.HUMAN) && Storage.roundStatus.equals("Started")) {
+                event.getPlayer().getWorld().strikeLightningEffect(event.getPlayer().getLocation());
+                IPlayer.getIPlayer(event.getPlayer()).setTeam(Team.ZOMBIE);
                 Utility.checkZombie();
-                SQLHandler.logKill("VOID", e.getPlayer().getName(), Storage.currentRound, Storage.currentGamemode.toString());
+                SQLHandler.logKill("VOID", event.getPlayer().getName(), Storage.currentRound, Storage.currentGamemode.toString());
             } else if (Storage.roundStatus.equals("Cycling")) {
-                Utility.handKit(e.getPlayer());
+                Utility.handKit(event.getPlayer());
             }
         }
         if (Storage.roundStatus.equals("Cycling")) return;
         if (Storage.currentGamemode.equals(Gamemode.PVP) || Storage.currentGamemode.equals(Gamemode.TIMED_PVP)) return;
-        if (Storage.roundStatus.equals("Started") && IPlayer.getIPlayer(e.getPlayer().getName()).getTeam().equals(Team.ZOMBIE))
-            for (Entity en : e.getPlayer().getNearbyEntities(0.5, 0.5, 0.5)) {
-                if (en instanceof Player) {
-                    Player p = (Player) en;
+        if (Storage.roundStatus.equals("Started") && IPlayer.getIPlayer(event.getPlayer().getName()).getTeam().equals(Team.ZOMBIE))
+            for (Entity entity : event.getPlayer().getNearbyEntities(0.5, 0.5, 0.5)) {
+                if (entity instanceof Player) {
+                    Player p = (Player) entity;
                     if (IPlayer.getIPlayer(p.getName()).getTeam().equals(Team.HUMAN)) {
-                        Bukkit.getPluginManager().callEvent(new PlayerInfectEvent(IPlayer.getIPlayer(e.getPlayer().getName()), IPlayer.getIPlayer(p.getName())));
-                        Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + Storage.randomDeathMessage() + e.getPlayer().getDisplayName());
+                        Bukkit.getPluginManager().callEvent(new PlayerInfectEvent(IPlayer.getIPlayer(event.getPlayer().getName()), IPlayer.getIPlayer(p.getName())));
+                        Bukkit.broadcastMessage(p.getDisplayName() + ChatColor.YELLOW + Storage.getRandomDeathMessage() + event.getPlayer().getDisplayName());
                     }
                 }
             }
     }
 
     @EventHandler
-    public void tag(PlayerReceiveNameTagEvent e) {
-        if (IPlayer.getIPlayer(e.getNamedPlayer()).getTeam().equals(Team.HUMAN)) {
-            e.setTag(ChatColor.GREEN + e.getNamedPlayer().getName());
-        } else if (IPlayer.getIPlayer(e.getNamedPlayer()).getTeam().equals(Team.ZOMBIE)) {
-            e.setTag(ChatColor.DARK_RED + e.getNamedPlayer().getName());
-        } else if (IPlayer.getIPlayer(e.getNamedPlayer()).getTeam().equals(Team.OBSERVER)) {
-            e.setTag(ChatColor.AQUA + e.getNamedPlayer().getName());
+    public void tag(PlayerReceiveNameTagEvent event) {
+        if (IPlayer.getIPlayer(event.getNamedPlayer()).getTeam().equals(Team.HUMAN)) {
+            event.setTag(ChatColor.GREEN + event.getNamedPlayer().getName());
+        } else if (IPlayer.getIPlayer(event.getNamedPlayer()).getTeam().equals(Team.ZOMBIE)) {
+            event.setTag(ChatColor.DARK_RED + event.getNamedPlayer().getName());
+        } else if (IPlayer.getIPlayer(event.getNamedPlayer()).getTeam().equals(Team.OBSERVER)) {
+            event.setTag(ChatColor.AQUA + event.getNamedPlayer().getName());
         }
     }
 }

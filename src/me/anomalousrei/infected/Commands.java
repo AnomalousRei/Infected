@@ -1,8 +1,8 @@
 package me.anomalousrei.infected;
 
-import com.oresomecraft.campaign.database.MySQL;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
+import me.anomalousrei.infected.database.MySQL;
 import me.anomalousrei.infected.handlers.SQLHandler;
 import me.anomalousrei.infected.util.Gamemode;
 import me.anomalousrei.infected.util.Utility;
@@ -30,7 +30,7 @@ public class Commands {
             usage = "<map>",
             min = 1,
             max = 1)
-    public void g(CommandContext args, CommandSender sender) {
+    public void goToNext(CommandContext args, CommandSender sender) {
         String map = args.getString(0);
         if (Storage.gTo.equals("None")) {
             sender.sendMessage(ChatColor.RED + "You cannot goto a map at the moment.");
@@ -44,13 +44,13 @@ public class Commands {
             sender.sendMessage(ChatColor.RED + "That map isn't available at the moment.");
             return;
         }
-        Player p = (Player) sender;
+        Player player = (Player) sender;
         int x = Storage.spawns.get(Storage.gTo).getBlockX();
         int y = Storage.spawns.get(Storage.gTo).getBlockY();
         int z = Storage.spawns.get(Storage.gTo).getBlockZ();
-        if (!p.getWorld().getName().equals(Storage.roundID + "")) {
-            p.teleport(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
-            Utility.handKit(p);
+        if (!player.getWorld().getName().equals(Storage.roundID + "")) {
+            player.teleport(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
+            Utility.handKit(player);
         }
     }
 
@@ -82,9 +82,9 @@ public class Commands {
                             plugin.storagePassword);
 
                     mysql.open();
-                    ResultSet rsk = mysql.query("SELECT COUNT(killer) FROM " + plugin.storageDatabase + "_kills WHERE killer='" + player + "'");
-                    rsk.first();
-                    int kills = rsk.getInt(1);
+                    ResultSet resultSet = mysql.query("SELECT COUNT(killer) FROM " + plugin.storageDatabase + "_kills WHERE killer='" + player + "'");
+                    resultSet.first();
+                    int kills = resultSet.getInt(1);
 
                     ResultSet rsd = mysql.query("SELECT COUNT(killer) FROM " + plugin.storageDatabase + "_kills WHERE killed='" + player + "'");
                     rsd.first();
@@ -97,7 +97,9 @@ public class Commands {
                     sender.sendMessage(ChatColor.GRAY + "| " + ChatColor.BLUE + "KD: " + ChatColor.GRAY + toKD(kills, deaths));
                     sender.sendMessage(ChatColor.GRAY + "|-------------------------");
                     mysql.close();
-                } catch (SQLException e) {
+                } catch (SQLException ex) {
+                    System.out.println("An error occurred while attempting to fetch database information!");
+                    ex.printStackTrace();
                 }
             }
         });
@@ -112,12 +114,12 @@ public class Commands {
         Iterator iterator = Storage.rotationList.iterator();
         int i = 0;
         while (iterator.hasNext()) {
-            String s = (String) iterator.next();
+            String string = (String) iterator.next();
             i++;
             String color = "";
             if (i == Storage.rotationPoint + 1) color = ChatColor.GOLD + "";
-            ArrayList<String> creators = Storage.creators.get(s);
-            sender.sendMessage(ChatColor.GRAY + "| " + color + i + ". " + ChatColor.GREEN + s + " (" +
+            ArrayList<String> creators = Storage.creators.get(string);
+            sender.sendMessage(ChatColor.GRAY + "| " + color + i + ". " + ChatColor.GREEN + string + " (" +
                     ChatColor.AQUA + ChatColor.ITALIC + "by " + Utility.sentenceFormat(creators) + ChatColor.RESET + ChatColor.GREEN + ")");
         }
         sender.sendMessage(ChatColor.GRAY + "|-----------------------");
@@ -142,7 +144,6 @@ public class Commands {
                     return;
                 }
 
-
                 MySQL mysql = new MySQL(plugin.logger,
                         "[OnslaughtDB] ",
                         plugin.storageHostname,
@@ -152,11 +153,10 @@ public class Commands {
                         plugin.storagePassword);
 
                 mysql.open();
-
-                ResultSet rsd = mysql.query("SELECT COUNT(map) FROM " + plugin.storageDatabase + "_rounds WHERE map='" + map + "'");
+                ResultSet resultSet = mysql.query("SELECT COUNT(map) FROM " + plugin.storageDatabase + "_rounds WHERE map='" + map + "'");
                 try {
-                    rsd.first();
-                    int playcount = rsd.getInt(1);
+                    resultSet.first();
+                    int playCount = resultSet.getInt(1);
 
                     ArrayList<String> creators = Storage.creators.get(map);
                     sender.sendMessage(ChatColor.GRAY + "|-------------------------");
@@ -164,19 +164,20 @@ public class Commands {
                     sender.sendMessage(ChatColor.GRAY + "| " + ChatColor.GREEN + "Made by: " + ChatColor.BLUE + ChatColor.ITALIC + Utility.sentenceFormat(creators));
                     sender.sendMessage(ChatColor.GRAY + "| " + ChatColor.DARK_AQUA + "It is a " + ChatColor.LIGHT_PURPLE +
                             ChatColor.ITALIC + Gamemode.toFormat(Storage.gameTypes.get(map)) + ChatColor.RESET + ChatColor.DARK_AQUA + " type map");
-                    sender.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "Times played: " + ChatColor.GRAY + playcount);
+                    sender.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "Times played: " + ChatColor.GRAY + playCount);
                     sender.sendMessage(ChatColor.GRAY + "|-------------------------");
-                } catch (SQLException e) {
-
+                } catch (SQLException ex) {
+                    System.out.println("An error occurred while attempting to fetch database information!");
+                    ex.printStackTrace();
                 }
             }
         });
     }
 
     private String matchMap(String map) {
-        for (String s : Storage.maps) {
-            if (s.toLowerCase().startsWith(map.toLowerCase())) {
-                return s;
+        for (String string : Storage.maps) {
+            if (string.toLowerCase().startsWith(map.toLowerCase())) {
+                return string;
             }
         }
         return "None";
@@ -186,7 +187,7 @@ public class Commands {
         if (deaths == 0) return kills;
         if (kills == 0 && deaths > 0) return 0;
         double kd = kills / deaths;
-        DecimalFormat df = new DecimalFormat("#.##");
-        return Double.parseDouble(df.format(kd));
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        return Double.parseDouble(decimalFormat.format(kd));
     }
 }

@@ -19,105 +19,106 @@ public class Utility {
     public static Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
     public static void updateScoreboard() {
-        Objective o = scoreboard.getObjective("Player Count");
-        Score zombies = o.getScore(Bukkit.getOfflinePlayer(ChatColor.DARK_RED + "Zombies: "));
-        Score humans = o.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN + "Humans: "));
+        Objective objective = scoreboard.getObjective("Player Count");
+        Score zombies = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.DARK_RED + "Zombies: "));
+        Score humans = objective.getScore(Bukkit.getOfflinePlayer(ChatColor.GREEN + "Humans: "));
         zombies.setScore(zombieCount());
         humans.setScore(humanCount());
     }
 
     private static int zombieCount() {
         int count = 0;
-        for (IPlayer p : Infected.iPlayers.values()) {
-            if (p.getTeam().equals(Team.ZOMBIE)) count++;
+        for (IPlayer iPlayer : Infected.iPlayers.values()) {
+            if (iPlayer.getTeam().equals(Team.ZOMBIE)) count++;
         }
         return count;
     }
 
     private static int humanCount() {
         int count = 0;
-        for (IPlayer p : Infected.iPlayers.values()) {
-            if (p.getTeam().equals(Team.HUMAN)) count++;
+        for (IPlayer iPlayer : Infected.iPlayers.values()) {
+            if (iPlayer.getTeam().equals(Team.HUMAN)) count++;
         }
         return count;
     }
 
-    public static void handKit(Player p, String map) {
-        p.getInventory().clear();
-        p.setGameMode(GameMode.SURVIVAL);
-        p.getInventory().setHelmet(new ItemStack(Material.AIR));
-        p.getInventory().setChestplate(new ItemStack(Material.AIR));
-        p.getInventory().setLeggings(new ItemStack(Material.AIR));
-        p.getInventory().setBoots(new ItemStack(Material.AIR));
-        p.setFoodLevel(20);
-        p.setHealth(20);
+    public static void handKit(Player player, String map) {
+        player.getInventory().clear();
+        player.setGameMode(GameMode.SURVIVAL);
+        player.getInventory().setHelmet(new ItemStack(Material.AIR));
+        player.getInventory().setChestplate(new ItemStack(Material.AIR));
+        player.getInventory().setLeggings(new ItemStack(Material.AIR));
+        player.getInventory().setBoots(new ItemStack(Material.AIR));
+        player.setFoodLevel(20);
+        player.setHealth(20);
+
         HashMap<Integer, ItemStack> temp = Storage.kits.get(map);
         Iterator iterator = temp.entrySet().iterator();
-        /* iterate through the hashmap to set the stuff to their slots */
+        // Iterate through the HashMap to set the items to their slots
         while (iterator.hasNext()) {
             Map.Entry<Integer, ItemStack> it = (Map.Entry<Integer, ItemStack>) iterator.next();
             ItemStack i = it.getValue();
             int slot = it.getKey();
             if (slot == -1) {
-                p.getInventory().setHelmet(i);
+                player.getInventory().setHelmet(i);
             } else if (slot == -2) {
-                p.getInventory().setChestplate(i);
+                player.getInventory().setChestplate(i);
             } else if (slot == -3) {
-                p.getInventory().setLeggings(i);
+                player.getInventory().setLeggings(i);
             } else if (slot == -4) {
-                p.getInventory().setBoots(i);
+                player.getInventory().setBoots(i);
             } else {
-                p.getInventory().setItem(slot, i);
+                player.getInventory().setItem(slot, i);
             }
         }
     }
 
-    public static void handKit(Player p) {
-        handKit(p, Storage.currentRound);
+    public static void handKit(Player player) {
+        handKit(player, Storage.currentRound);
     }
 
-    public static void updateDisplayName(Player p) {
-        TagAPI.refreshPlayer(p);
-        String name = p.getName();
-        ChatColor c = teamColor(IPlayer.getIPlayer(p).getTeam());
+    public static void updateDisplayName(Player player) {
+        TagAPI.refreshPlayer(player);
+        String name = player.getName();
+        ChatColor chatColor = teamColor(IPlayer.getIPlayer(player).getTeam());
 
-        if (p.getName().length() > 14) {
-            String newTabName = p.getName().substring(0, 14);
-            p.setPlayerListName(c + newTabName);
+        if (player.getName().length() > 14) {
+            String newTabName = player.getName().substring(0, 14);
+            player.setPlayerListName(chatColor + newTabName);
         } else {
-            p.setPlayerListName(c + name);
+            player.setPlayerListName(chatColor + name);
         }
 
-        p.setDisplayName(name);
-        p.setDisplayName(c + name + ChatColor.RESET);
-        addPrefix(p);
+        player.setDisplayName(name);
+        player.setDisplayName(chatColor + name + ChatColor.RESET);
+        addPrefix(player);
 
     }
 
-    private static void addPrefix(Player p) {
+    private static void addPrefix(Player player) {
 
-        if (p.hasPermission("infected.rank.donator") && !p.hasPermission("infected.rank.admin")) {
-            p.setDisplayName(ChatColor.DARK_GREEN + "*" + p.getDisplayName());
+        if (player.hasPermission("infected.rank.donator") && !player.hasPermission("infected.rank.admin")) {
+            player.setDisplayName(ChatColor.DARK_GREEN + "*" + player.getDisplayName());
         }
 
-        if (p.hasPermission("infected.rank.mod") && !p.hasPermission("infected.rank.admin")) {
-            p.setDisplayName(ChatColor.DARK_RED + "*" + p.getDisplayName());
+        if (player.hasPermission("infected.rank.mod") && !player.hasPermission("infected.rank.admin")) {
+            player.setDisplayName(ChatColor.DARK_RED + "*" + player.getDisplayName());
         }
 
-        if (p.hasPermission("infected.rank.admin")) {
-            p.setDisplayName(ChatColor.GOLD + "*" + p.getDisplayName());
+        if (player.hasPermission("infected.rank.admin")) {
+            player.setDisplayName(ChatColor.GOLD + "*" + player.getDisplayName());
         }
 
-        if (Storage.currentCreators.contains(p.getName())) {
-            p.setDisplayName(ChatColor.BLUE + "*" + p.getDisplayName());
+        if (Storage.currentCreators.contains(player.getName())) {
+            player.setDisplayName(ChatColor.BLUE + "*" + player.getDisplayName());
         }
 
     }
 
-    private static ChatColor teamColor(Team t) {
-        if (t.equals(Team.HUMAN)) return ChatColor.GREEN;
-        if (t.equals(Team.ZOMBIE)) return ChatColor.DARK_RED;
-        if (t.equals(Team.OBSERVER)) return ChatColor.AQUA;
+    private static ChatColor teamColor(Team team) {
+        if (team.equals(Team.HUMAN)) return ChatColor.GREEN;
+        if (team.equals(Team.ZOMBIE)) return ChatColor.DARK_RED;
+        if (team.equals(Team.OBSERVER)) return ChatColor.AQUA;
         return ChatColor.WHITE;
     }
 
@@ -146,10 +147,10 @@ public class Utility {
         if (zombieCount() == 0 && humanCount() > 0) {
             ArrayList<IPlayer> players = new ArrayList<IPlayer>();
             players.addAll(Infected.iPlayers.values());
-            IPlayer p = players.get(new Random().nextInt(players.size()));
-            Bukkit.broadcastMessage(p.getName());
-            IPlayer.getIPlayer(p).setTeam(Team.ZOMBIE);
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "The disease continues with " + p.getDisplayName() + ChatColor.YELLOW + "!");
+            IPlayer iPlayer = players.get(new Random().nextInt(players.size()));
+            Bukkit.broadcastMessage(iPlayer.getName());
+            IPlayer.getIPlayer(iPlayer).setTeam(Team.ZOMBIE);
+            Bukkit.broadcastMessage(ChatColor.YELLOW + "The disease continues with " + iPlayer.getDisplayName() + ChatColor.YELLOW + "!");
         }
         checkEndRound();
     }
@@ -173,41 +174,41 @@ public class Utility {
     }
 
     public static IPlayer getHuman() {
-        for (IPlayer p : Infected.iPlayers.values()) {
-            if (p.getTeam().equals(Team.HUMAN)) return p;
+        for (IPlayer iPlayer : Infected.iPlayers.values()) {
+            if (iPlayer.getTeam().equals(Team.HUMAN)) return iPlayer;
         }
         return null;
     }
 
     public static void runEndRound() {
-        /*Bukkit.getScheduler().runTaskLater(Infected.getInstance(), new Runnable);*/
+        // Bukkit.getScheduler().runTaskLater(Infected.getInstance(), new Runnable);
     }
 
     public static void respawn() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             try {
-                Object nmsPlayer = p.getClass().getMethod("getHandle").invoke(p);
+                Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
                 Object packet = Class.forName(nmsPlayer.getClass().getPackage().getName() + ".PacketPlayInClientCommand").newInstance();
                 Class<?> enumClass = Class.forName(nmsPlayer.getClass().getPackage().getName() + ".EnumClientCommand");
 
-                for (Object ob : enumClass.getEnumConstants()) {
-                    if (ob.toString().equals("PERFORM_RESPAWN")) {
-                        packet = packet.getClass().getConstructor(enumClass).newInstance(ob);
+                for (Object object : enumClass.getEnumConstants()) {
+                    if (object.toString().equals("PERFORM_RESPAWN")) {
+                        packet = packet.getClass().getConstructor(enumClass).newInstance(object);
                     }
                 }
 
-                Object con = nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
-                con.getClass().getMethod("a", packet.getClass()).invoke(con, packet);
+                Object connection = nmsPlayer.getClass().getField("playerConnection").get(nmsPlayer);
+                connection.getClass().getMethod("a", packet.getClass()).invoke(connection, packet);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
     }
 
-    public static void teleportToSpawn(Player p) {
+    public static void teleportToSpawn(Player player) {
         int x = Storage.spawns.get(Storage.currentRound).getBlockX();
         int y = Storage.spawns.get(Storage.currentRound).getBlockY();
         int z = Storage.spawns.get(Storage.currentRound).getBlockZ();
-        p.teleport(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
+        player.teleport(new Location(Bukkit.getWorld(Storage.roundID + ""), x, y, z));
     }
 }

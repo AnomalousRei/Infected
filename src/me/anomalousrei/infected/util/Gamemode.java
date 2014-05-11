@@ -6,11 +6,11 @@ public enum Gamemode {
     TIMED_CLASSIC,
     TIMED_PVP;
 
-    public static String toFormat(Gamemode g) {
-        if (g.equals(CLASSIC)) return "Last Human Classic Infected";
-        if (g.equals(PVP)) return "Last Human Fighting Infected";
-        if (g.equals(TIMED_PVP)) return "Survival Fighting Infected";
-        if (g.equals(TIMED_CLASSIC)) return "Survival Classic Infected";
+    public static String toFormat(Gamemode gamemode) {
+        if (gamemode.equals(CLASSIC)) return "Last Human Classic Infected";
+        if (gamemode.equals(PVP)) return "Last Human Fighting Infected";
+        if (gamemode.equals(TIMED_PVP)) return "Survival Fighting Infected";
+        if (gamemode.equals(TIMED_CLASSIC)) return "Survival Classic Infected";
         return "Unspecified";
     }
 }
